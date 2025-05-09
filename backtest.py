@@ -363,8 +363,10 @@ class PairTradingBacktester_TrainTest:
         for pair in self.summary["pair"]:
             s1, s2 = pair
             beta = beta_map[pair]
-            w1 = 1.0 / (1.0 - beta)  # Weight for stock1
-            w2 = -beta / (1.0 - beta)  # Weight for stock2
+            # w1 = 1.0 / (1.0 - beta)  # Weight for stock1
+            # w2 = -beta / (1.0 - beta)  # Weight for stock2
+            w1 = 1
+            w2 = -beta
 
             # Add weights for both stocks in the pair
             tuples.extend([(pair, s1), (pair, s2)])

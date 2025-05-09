@@ -29,20 +29,17 @@ class Data_loader():
         assert self.__check_duplicate_stocks(self.combined_data) is True, "duplicate columns in combined data"
 
 
-    def get_window(self, start_idx, window_length=None, verbose=False):
+    def get_window(self, start_idx, verbose=False):
         """
         从start index开始, 一年半的window,
         删除含有nan值的股票,只保留有完整数据的股票列
         """
 
-        if window_length is None:
-            window_length = self.window_length
-
-        length_check = (start_idx + window_length <= self.combined_data.shape[0])
+        length_check = (start_idx + self.window_length <= self.combined_data.shape[0])
         assert length_check, "start_idx out of bound"
 
 
-        res = self.combined_data.iloc[start_idx:start_idx+window_length]
+        res = self.combined_data.iloc[start_idx:start_idx+self.window_length]
 
         original_width = res.shape[1]
         res = res.dropna(axis=1) #去除有nan的股票列
