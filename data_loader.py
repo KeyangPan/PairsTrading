@@ -6,13 +6,14 @@ import math
 
 class Data_loader():
     def __init__(self, 
-                 train_ratio = 2/3,
-                 window_length = math.floor(253*1.5),
+                 num_month_train = 8,
+                 num_month_test = 2,
                  nasdaq_path = 'data/nasdaq_19900101_20031231.csv', 
                  nyse_path = 'data/nyse_19900101_20031231.csv'):
+        
 
-        self.window_length = window_length
-        self.train_ratio = train_ratio
+        self.window_length = math.floor(252* (num_month_train/12 + num_month_test/12))
+        self.train_ratio = num_month_train / (num_month_train + num_month_test)
 
         self.nasdaq_path = nasdaq_path
         self.nyse_path = nyse_path
@@ -27,7 +28,8 @@ class Data_loader():
 
         self.combined_data = self.__merge_exchange()
         assert self.__check_duplicate_stocks(self.combined_data) is True, "duplicate columns in combined data"
-
+        
+        self.data_length = len(self.combined_data)
 
     def get_window(self, start_idx, verbose=False):
         """
@@ -62,11 +64,17 @@ class Data_loader():
 
         return window_train, window_test
     
-    def window_loader(self):
+    def window_generator(self, num_month_increment):
         # 定义一个iterator,返回一个iterator
         # 每半年返回一个窗口用于train和test
-        # TODO
-        return 
+        step = math.floor(252* (num_month_increment/12))
+
+        start_idx_list = list(range(0, self.data_length-self.window_length+1, step))
+
+        for idx in start_idx_list:
+            window_train, window_test = self.get_window(start_idx=idx, verbose=False)
+            yield window_train, window_test
+
 
 
 
