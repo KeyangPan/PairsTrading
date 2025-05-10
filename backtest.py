@@ -221,7 +221,7 @@ class PairTradingBacktester_TrainTest:
     # ------------------------------------------------------------------ #
     # ------------------------   public API   -------------------------- #
     # ------------------------------------------------------------------ #
-    def run(self, top_k: int = 50) -> pd.DataFrame:
+    def run(self, top_k: int = 50, tqdm_enable=False) -> pd.DataFrame:
         """
         Executes the full backtesting process across train and test datasets.
 
@@ -239,7 +239,7 @@ class PairTradingBacktester_TrainTest:
         """
         # -------- step 1: train run & collect Sharpe --------------- #
         records = []
-        if tqdm:
+        if tqdm_enable:
             iterator = tqdm(range(len(self.pairs)), desc="Train back-test")
         else:
             iterator = range(len(self.pairs))
@@ -264,7 +264,7 @@ class PairTradingBacktester_TrainTest:
         selected = set(map(tuple, top_df["pair"]))
 
         # -------- step 3: test run for selected pairs --------------- #
-        if tqdm:
+        if tqdm_enable:
             iterator = tqdm(selected, desc="Test back-test")
         else:
             iterator = selected
