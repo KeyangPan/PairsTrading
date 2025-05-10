@@ -57,17 +57,20 @@ class Data_loader():
 
         res = res.sort_index()
 
-        start_index = math.floor(len(res) * self.train_ratio)
+        start_index = math.floor(self.window_length * self.train_ratio)
 
         window_train = res.iloc[0:start_index]
         window_test = res.iloc[start_index:]
 
         return window_train, window_test
     
-    def window_generator(self, num_month_increment):
+    def window_generator(self, step=None):
         # 定义一个iterator,返回一个iterator
         # 每半年返回一个窗口用于train和test
-        step = math.floor(252* (num_month_increment/12))
+
+        # setp size = length of test window
+        if step is None:
+            step = math.floor(self.window_length * (1-self.train_ratio))
 
         start_idx_list = list(range(0, self.data_length-self.window_length+1, step))
 
