@@ -76,7 +76,7 @@ class Data_loader():
 
         for idx in start_idx_list:
             window_train, window_test = self.get_window(start_idx=idx, verbose=False)
-            yield window_train, window_test
+            yield (window_train, window_test)
 
 
 

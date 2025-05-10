@@ -1,10 +1,10 @@
 import numpy as np
-import cvxpy as cp
 from typing import Dict
 from typing import Optional
 import pandas as pd
 import numpy as np
 from scipy.optimize import minimize, LinearConstraint, NonlinearConstraint
+import cvxpy as cp
 
 
 def EW_optimizer(rets_data):
