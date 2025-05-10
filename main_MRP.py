@@ -1,11 +1,4 @@
 import cvxpy as cp
-
-# Prevent CVXPY from attempting to import these solvers
-cp.settings.CVXOPT_ATTEMPTS = 0
-cp.settings.GLPK_ATTEMPTS = 0
-cp.settings.GLPK_MI_ATTEMPTS = 0
-
-
 import math
 from data_loader import Data_loader
 from pair_filter import NPD_filter
@@ -79,7 +72,8 @@ if __name__ == "__main__":
     window_generator = dl.window_generator()
     windows = list(window_generator)
 
-    num_processes = mp.cpu_count()
+
+    num_processes = min(mp.cpu_count(), len(windows))
     print(f"Using {num_processes} processes")
 
     start_time = time.time()
@@ -100,10 +94,10 @@ if __name__ == "__main__":
         output_dir = "output_MRP"
         os.makedirs(output_dir, exist_ok=True)
 
-        with open(f'{output_dir}/train_tables.pkl', 'wb') as f:
+        with open(f'{output_dir}/train_tables_train{num_month_train}_test{num_month_test}.pkl', 'wb') as f:
             pickle.dump(table_train_list, f)
         
-        with open(f'{output_dir}/test_tables.pkl', 'wb') as f:
+        with open(f'{output_dir}/test_tables_train{num_month_train}_test{num_month_test}.pkl', 'wb') as f:
             pickle.dump(table_test_list, f)
         
         print("Files saved using pickle")
