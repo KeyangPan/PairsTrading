@@ -239,7 +239,11 @@ class PairTradingBacktester_TrainTest:
         """
         # -------- step 1: train run & collect Sharpe --------------- #
         records = []
-        for idx in tqdm(range(len(self.pairs)), desc="Train back-test"):
+        if tqdm:
+            iterator = tqdm(range(len(self.pairs)), desc="Train back-test")
+        else:
+            iterator = range(len(self.pairs))
+        for idx in iterator:
             pair = self.pairs[idx]
             res_train = self._backtest_single(pair, self.params[idx], self.train_data)
             self.train_results[pair] = res_train
@@ -260,7 +264,11 @@ class PairTradingBacktester_TrainTest:
         selected = set(map(tuple, top_df["pair"]))
 
         # -------- step 3: test run for selected pairs --------------- #
-        for pair in tqdm(selected, desc="Test back-test"):
+        if tqdm:
+            iterator = tqdm(selected, desc="Test back-test")
+        else:
+            iterator = selected
+        for pair in iterator:
             idx = self.pairs.index(pair)  # Reuse original parameters
             self.test_results[pair] = self._backtest_single(
                 pair, self.params[idx], self.test_data
