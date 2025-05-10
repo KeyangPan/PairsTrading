@@ -67,8 +67,8 @@ class backtest_MRP:
             # current position is long
             elif position == 1:
                 curr_price = row['portfolio_value']
-                ret = curr_price / prev_price
-                portfolio_value = portfolio_value * ret
+                ret = (curr_price - prev_price) / np.abs(prev_price)
+                portfolio_value = portfolio_value * (ret + 1)
 
                 if row["unwind_signal"] == 1:
                     position = 0
@@ -76,8 +76,8 @@ class backtest_MRP:
             # current position is short
             elif position == -1:
                 curr_price = row['portfolio_value']
-                ret = 2 - curr_price/prev_price
-                portfolio_value = portfolio_value * ret
+                ret = (prev_price - curr_price) / np.abs(prev_price)
+                portfolio_value = portfolio_value * (ret + 1)
 
                 if row["unwind_signal"] == 1:
                     position = 0

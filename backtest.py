@@ -169,16 +169,20 @@ class PairTradingBacktester_TrainTest:
                 ret_list.append(0.0)  # No return when flat
             elif pos == 1:  # Long position
                 cur = row["spread"]
-                ret = cur / prev_price  # Return = current spread / entry spread
-                port_val *= ret  # Update portfolio value
+                # ret = cur / prev_price  # Return = current spread / entry spread
+                # port_val *= ret  # Update portfolio value
+                ret = (cur - prev_price) / np.abs(prev_price)
+                port_val *= (1+ret)
                 prev_price = cur  # Update previous price
                 ret_list.append(ret - 1.0)  # Daily return
                 if row["unwind_signal"]:
                     pos = 0  # Exit position on unwind signal
             elif pos == -1:  # Short position
                 cur = row["spread"]
-                ret = 2.0 - cur / prev_price  # Short return = 2 - (current / entry)
-                port_val *= ret  # Update portfolio value
+                # ret = 2.0 - cur / prev_price  # Short return = 2 - (current / entry)
+                # port_val *= ret  # Update portfolio value
+                ret = (prev_price - cur) / np.abs(prev_price)
+                port_val *= (1+ret)
                 prev_price = cur  # Update previous price
                 ret_list.append(ret - 1.0)  # Daily return
                 if row["unwind_signal"]:
