@@ -28,15 +28,16 @@ class backtest_MRP:
         residuals_train = self.portfolio_value_train - mu
         residuals_test = self.portfolio_value_test - mu 
 
-        pnl_list_train, _, _ = self._backtest(self.portfolio_value_train, residuals_train, thr)
-        pnl_lsit_test, _, _ = self._backtest(self.portfolio_value_test, residuals_test, thr)
+        trade_table_train = self._backtest(self.portfolio_value_train, residuals_train, thr)
+        trade_table_test = self._backtest(self.portfolio_value_test, residuals_test, thr)
 
-        return pnl_list_train, pnl_lsit_test
+        return trade_table_train, trade_table_test
 
     def _backtest(self, portfolio_values, residuals, thr):
         ## step1: form a trade table
         trade_table = pd.DataFrame({'portfolio_value': portfolio_values,
                                     'residuals': residuals,
+                                    'threshold': thr,
                             },
               index = residuals.index)
 
@@ -87,8 +88,11 @@ class backtest_MRP:
             prev_price = row['portfolio_value']
             position_list.append(position)
             portfolio_value_list.append(portfolio_value)   
+        
+        trade_table['position'] = position_list
+        trade_table['cum_ret'] = portfolio_value_list
 
-        return (portfolio_value_list, position_list, trade_table)
+        return trade_table
 
 
 
