@@ -160,6 +160,9 @@ class PairTradingBacktester_TrainTest:
         pos, prev_price, port_val = 0, np.nan, 1.0  # Initial position, previous spread, portfolio value
         pos_list, pv_list, ret_list = [], [], []  # Lists for position, portfolio value, returns
 
+
+        margin = 8*np.sqrt(sigma2)
+        
         # Iterate through each day to simulate trading
         for _, row in tbl.iterrows():
             if pos == 0:  # No position
@@ -173,7 +176,7 @@ class PairTradingBacktester_TrainTest:
                 # port_val *= ret  # Update portfolio value
 
                 # ret = (cur - prev_price) / np.abs(prev_price)
-                ret = (cur - prev_price) / (10*thr)
+                ret = (cur - prev_price) / (margin)
 
                 # port_val *= (1+ret)
                 prev_price = cur  # Update previous price
@@ -186,7 +189,7 @@ class PairTradingBacktester_TrainTest:
                 # port_val *= ret  # Update portfolio value
 
                 # ret = (prev_price - cur) / np.abs(prev_price)
-                ret = (prev_price - cur) / (10*thr)
+                ret = (prev_price - cur) / (margin)
 
                 # port_val *= (1+ret)
                 prev_price = cur  # Update previous price

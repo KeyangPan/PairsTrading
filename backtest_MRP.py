@@ -28,12 +28,12 @@ class backtest_MRP:
         residuals_train = self.portfolio_value_train - mu
         residuals_test = self.portfolio_value_test - mu 
 
-        trade_table_train = self._backtest(self.portfolio_value_train, residuals_train, thr)
-        trade_table_test = self._backtest(self.portfolio_value_test, residuals_test, thr)
+        trade_table_train = self._backtest(self.portfolio_value_train, residuals_train, thr, sigma)
+        trade_table_test = self._backtest(self.portfolio_value_test, residuals_test, thr, sigma)
 
         return trade_table_train, trade_table_test
 
-    def _backtest(self, portfolio_values, residuals, thr):
+    def _backtest(self, portfolio_values, residuals, thr, sigma):
         ## step1: form a trade table
         trade_table = pd.DataFrame({'portfolio_value': portfolio_values,
                                     'residuals': residuals,
@@ -58,6 +58,9 @@ class backtest_MRP:
         prev_price = None
         position = 0 # 0:position close; 1:long spread; 2: short spread
 
+
+        margin = 8*sigma
+
         for idx, row in trade_table.iterrows():
             daily_ret_list.append(0)
 
@@ -70,11 +73,9 @@ class backtest_MRP:
             elif position == 1:
                 curr_price = row['portfolio_value']
 
-                # ret = (curr_price - prev_price) / np.abs(prev_price)
-                ret = (curr_price - prev_price) / (10 * thr)
+                ret = (curr_price - prev_price) / margin
                 daily_ret_list[-1] = ret
 
-                # portfolio_value = portfolio_value * (ret + 1)
 
                 if row["unwind_signal"] == 1:
                     position = row['trade_signal']
@@ -83,11 +84,8 @@ class backtest_MRP:
             elif position == -1:
                 curr_price = row['portfolio_value']
 
-                # ret = (prev_price - curr_price) / np.abs(prev_price)
-                ret = (prev_price - curr_price) / (10*thr)
+                ret = (prev_price - curr_price) / margin
                 daily_ret_list[-1] = ret
-
-                # portfolio_value = portfolio_value * (ret + 1)
 
                 if row["unwind_signal"] == 1:
                     position = row['trade_signal']
@@ -97,10 +95,9 @@ class backtest_MRP:
 
             prev_price = row['portfolio_value']
             position_list.append(position)
-            # portfolio_value_list.append(portfolio_value)   
+
         
         trade_table['position'] = position_list
-        # trade_table['cum_ret'] = portfolio_value_list
         trade_table['daily_ret'] = daily_ret_list
 
         return trade_table
