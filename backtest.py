@@ -171,7 +171,10 @@ class PairTradingBacktester_TrainTest:
                 cur = row["spread"]
                 # ret = cur / prev_price  # Return = current spread / entry spread
                 # port_val *= ret  # Update portfolio value
-                ret = (cur - prev_price) / np.abs(prev_price)
+
+                # ret = (cur - prev_price) / np.abs(prev_price)
+                ret = (cur - prev_price) / (10*thr)
+
                 # port_val *= (1+ret)
                 prev_price = cur  # Update previous price
                 ret_list.append(ret)  # Daily return
@@ -181,7 +184,10 @@ class PairTradingBacktester_TrainTest:
                 cur = row["spread"]
                 # ret = 2.0 - cur / prev_price  # Short return = 2 - (current / entry)
                 # port_val *= ret  # Update portfolio value
-                ret = (prev_price - cur) / np.abs(prev_price)
+
+                # ret = (prev_price - cur) / np.abs(prev_price)
+                ret = (prev_price - cur) / (10*thr)
+
                 # port_val *= (1+ret)
                 prev_price = cur  # Update previous price
                 ret_list.append(ret)  # Daily return

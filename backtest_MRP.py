@@ -51,13 +51,15 @@ class backtest_MRP:
         trade_table.loc[trade_table.index[0], 'unwind_signal'] = 0   
 
         ## step2: backtest the given period
-        portfolio_value = 1 # initial value to be 1
-        portfolio_value_list = []
+        # portfolio_value = 1 # initial value to be 1
+        # portfolio_value_list = []
         position_list = []
+        daily_ret_list = []
         prev_price = None
         position = 0 # 0:position close; 1:long spread; 2: short spread
 
         for idx, row in trade_table.iterrows():
+            daily_ret_list.append(0)
 
             # current position is closed
             if position == 0:
@@ -67,8 +69,12 @@ class backtest_MRP:
             # current position is long
             elif position == 1:
                 curr_price = row['portfolio_value']
-                ret = (curr_price - prev_price) / np.abs(prev_price)
-                portfolio_value = portfolio_value * (ret + 1)
+
+                # ret = (curr_price - prev_price) / np.abs(prev_price)
+                ret = (curr_price - prev_price) / (10 * thr)
+                daily_ret_list[-1] = ret
+
+                # portfolio_value = portfolio_value * (ret + 1)
 
                 if row["unwind_signal"] == 1:
                     position = row['trade_signal']
@@ -76,8 +82,12 @@ class backtest_MRP:
             # current position is short
             elif position == -1:
                 curr_price = row['portfolio_value']
-                ret = (prev_price - curr_price) / np.abs(prev_price)
-                portfolio_value = portfolio_value * (ret + 1)
+
+                # ret = (prev_price - curr_price) / np.abs(prev_price)
+                ret = (prev_price - curr_price) / (10*thr)
+                daily_ret_list[-1] = ret
+
+                # portfolio_value = portfolio_value * (ret + 1)
 
                 if row["unwind_signal"] == 1:
                     position = row['trade_signal']
@@ -87,10 +97,11 @@ class backtest_MRP:
 
             prev_price = row['portfolio_value']
             position_list.append(position)
-            portfolio_value_list.append(portfolio_value)   
+            # portfolio_value_list.append(portfolio_value)   
         
         trade_table['position'] = position_list
-        trade_table['cum_ret'] = portfolio_value_list
+        # trade_table['cum_ret'] = portfolio_value_list
+        trade_table['daily_ret'] = daily_ret_list
 
         return trade_table
 
