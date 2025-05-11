@@ -172,33 +172,34 @@ class PairTradingBacktester_TrainTest:
                 # ret = cur / prev_price  # Return = current spread / entry spread
                 # port_val *= ret  # Update portfolio value
                 ret = (cur - prev_price) / np.abs(prev_price)
-                port_val *= (1+ret)
+                # port_val *= (1+ret)
                 prev_price = cur  # Update previous price
-                ret_list.append(ret - 1.0)  # Daily return
+                ret_list.append(ret)  # Daily return
                 if row["unwind_signal"]:
-                    pos = 0  # Exit position on unwind signal
+                    pos = row['trade_signal']  # Exit position on unwind signal
             elif pos == -1:  # Short position
                 cur = row["spread"]
                 # ret = 2.0 - cur / prev_price  # Short return = 2 - (current / entry)
                 # port_val *= ret  # Update portfolio value
                 ret = (prev_price - cur) / np.abs(prev_price)
-                port_val *= (1+ret)
+                # port_val *= (1+ret)
                 prev_price = cur  # Update previous price
-                ret_list.append(ret - 1.0)  # Daily return
+                ret_list.append(ret)  # Daily return
                 if row["unwind_signal"]:
-                    pos = 0  # Exit position on unwind signal
+                    pos = row['trade_signal']  # Exit position on unwind signal
             else:
                 raise ValueError("Invalid position state")
 
             pos_list.append(pos)
-            pv_list.append(port_val)
+            # pv_list.append(port_val)
 
         # Add simulation results to the table
         tbl["position"] = pos_list
-        tbl["portfolio_val"] = pv_list
+        # tbl["portfolio_val"] = pv_list
         tbl["ret"] = ret_list
         # Profit per day: Return adjusted by position direction
-        tbl["profit_per_day"] = tbl["ret"] * tbl["position"]
+        # tbl["profit_per_day"] = tbl["ret"] * tbl["position"]
+        tbl['profit_per_day'] = tbl['ret']
 
         # ----------------  stage 3: Sharpe  ---------------------- #
         full_ret = np.asarray(ret_list, float)

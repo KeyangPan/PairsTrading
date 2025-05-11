@@ -71,7 +71,7 @@ class backtest_MRP:
                 portfolio_value = portfolio_value * (ret + 1)
 
                 if row["unwind_signal"] == 1:
-                    position = 0
+                    position = row['trade_signal']
             
             # current position is short
             elif position == -1:
@@ -80,7 +80,7 @@ class backtest_MRP:
                 portfolio_value = portfolio_value * (ret + 1)
 
                 if row["unwind_signal"] == 1:
-                    position = 0
+                    position = row['trade_signal']
             
             else:
                 raise "Position invalid"
